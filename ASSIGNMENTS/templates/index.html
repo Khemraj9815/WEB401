@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Secure Web CLI</title>
+  <style>
+    body { background:#0d1117; color:#e6edf3; font-family:monospace; max-width:720px; margin:40px auto; padding:0 16px; }
+    h1 { font-size:20px; }
+    select, input, button { font-family:monospace; font-size:14px; padding:8px; margin:4px 0; }
+    input { width:260px; }
+    button { background:#238636; color:#fff; border:none; cursor:pointer; }
+    #terminal { background:#010409; border:1px solid #30363d; border-radius:6px; padding:14px; min-height:220px; white-space:pre-wrap; margin-top:12px; }
+    .prompt { color:#58a6ff; }
+  </style>
+</head>
+<body>
+  <h1>Secure Web CLI</h1>
+  <p>Only approved commands can be run. User input is validated and executed without a shell.</p>
+
+  <div>
+    <select id="command">
+      {% for c in commands %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+    </select>
+    <input id="target" placeholder="host/IP (ping, nslookup)">
+    <button onclick="runCommand()">Run</button>
+  </div>
+
+  <div id="terminal"><span class="prompt">$</span> ready...</div>
+
+  <script>
+    async function runCommand() {
+      const command = document.getElementById('command').value;
+      const target  = document.getElementById('target').value;
+      const term    = document.getElementById('terminal');
+      term.textContent = '$ ' + command + ' ' + target + '\n\nrunning...';
+      const body = new URLSearchParams({ command, target });
+      const res  = await fetch('/run', { method:'POST', body });
+      const data = await res.json();
+      term.textContent = '$ ' + command + ' ' + target + '\n\n' + data.output;
+    }
+  </script>
+</body>
+</html>
