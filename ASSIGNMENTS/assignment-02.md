@@ -21,7 +21,7 @@ This can let an attacker read files, steal data, or take over the server.
 pip install flask
 ```
 
-### The Vulnerable Pattern (what NOT to do)
+### The Vulnerable Pattern 
 This is the common mistake that causes command injection. It is shown only to understand the problem:
 ```python
 # DANGEROUS - do not use

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Secure File Upload</title>
+  <style>
+    body { background:#0d1117; color:#e6edf3; font-family:system-ui,monospace; max-width:640px; margin:40px auto; padding:0 16px; }
+    h1 { font-size:20px; }
+    .box { border:1px solid #30363d; border-radius:8px; padding:20px; background:#161b22; }
+    input[type=file] { color:#e6edf3; margin:10px 0; }
+    button { background:#238636; color:#fff; border:none; padding:9px 16px; border-radius:6px; cursor:pointer; font-size:14px; }
+    #result { margin-top:14px; padding:12px; border-radius:6px; white-space:pre-wrap; font-family:monospace; }
+    .ok { background:#10331a; color:#7ee787; }
+    .err { background:#3a1114; color:#ff9a9a; }
+    small { color:#8b949e; }
+  </style>
+</head>
+<body>
+  <h1>Secure File Upload</h1>
+  <div class="box">
+    <p>Allowed file types: <strong>{{ allowed|join(', ') }}</strong> &nbsp; (max 2 MB)</p>
+    <input type="file" id="file">
+    <br>
+    <button onclick="uploadFile()">Upload</button>
+    <div id="result"><small>No file uploaded yet.</small></div>
+  </div>
+
+  <script>
+    async function uploadFile() {
+      const input  = document.getElementById('file');
+      const result = document.getElementById('result');
+      if (!input.files.length) { result.className='err'; result.textContent='Please choose a file.'; return; }
+      const data = new FormData();
+      data.append('file', input.files[0]);
+      result.className=''; result.textContent='Uploading...';
+      try {
+        const res  = await fetch('/upload', { method:'POST', body:data });
+        const json = await res.json();
+        result.className = json.ok ? 'ok' : 'err';
+        result.textContent = json.msg;
+      } catch (e) {
+        result.className='err'; result.textContent='Upload failed: ' + e;
+      }
+    }
+  </script>
+</body>
+</html>
